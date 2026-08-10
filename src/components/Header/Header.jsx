@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, ShoppingBag, User, Menu, X } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import './Header.css';
 
 export const Header = () => {
   const location = useLocation();
@@ -25,21 +26,34 @@ export const Header = () => {
     return location.pathname.startsWith(path);
   };
 
+  const announcementText = "COMPLIMENTARY SHIPPING ON ORDERS OVER ₹5,000";
+
   return (
     <>
-      {/* Announcement Bar */}
-      <div style={{
-        backgroundColor: 'var(--primary)',
-        color: 'var(--primary-foreground)',
-        padding: '8px 16px',
-        textAlign: 'center',
-        fontSize: '11px',
-        fontWeight: 500,
-        letterSpacing: '0.12em',
-        textTransform: 'uppercase',
-        fontFamily: 'var(--font-sans)'
-      }}>
-        Complimentary shipping on orders over ₹5,000
+      {/* Animated Announcement Bar Marquee */}
+      <div className="announcement-bar">
+        <div className="announcement-track">
+          {[1, 2].map((groupKey) => (
+            <div key={groupKey} className="announcement-group">
+              <span className="announcement-item">
+                {announcementText}
+                <span className="announcement-divider" />
+              </span>
+              <span className="announcement-item">
+                CRAFTED FOR EVERYDAY MOVEMENT
+                <span className="announcement-divider" />
+              </span>
+              <span className="announcement-item">
+                {announcementText}
+                <span className="announcement-divider" />
+              </span>
+              <span className="announcement-item">
+                SUSTAINABLY MADE IN SMALL BATCHES
+                <span className="announcement-divider" />
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Main Header */}
