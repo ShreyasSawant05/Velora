@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { getProducts } from '../lib/shopify/products.js';
+import { getProducts, getCollections } from '../lib/shopify/products.js';
 
 const ProductContext = createContext();
 
@@ -23,33 +23,48 @@ export const ProductProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const shopifyProducts = await getProducts(50);
+      const [shopifyProducts, shopifyCollections] = await Promise.all([
+        getProducts(50),
+        getCollections(10)
+      ]);
+
       setProducts(shopifyProducts);
 
-      // Derive categories dynamically from Shopify products if collections exist
-      if (shopifyProducts && shopifyProducts.length > 0) {
-        const foundCategories = new Set();
-        shopifyProducts.forEach(p => {
-          if (p.category && p.category !== 'Footwear') {
-            foundCategories.add(p.category);
+      // Map Shopify collection images
+      const collectionMap = new Map();
+      (shopifyCollections || []).forEach(col => {
+        if (col.title) collectionMap.set(col.title.toLowerCase(), col);
+        if (col.handle) collectionMap.set(col.handle.toLowerCase(), col);
+      });
+
+      // Enrich default categories with images
+      const enrichedCategories = DEFAULT_CATEGORIES.map(cat => {
+        const matched = collectionMap.get(cat.name.toLowerCase()) || collectionMap.get(cat.slug.toLowerCase());
+        return {
+          ...cat,
+          image: matched?.image || null
+        };
+      });
+
+      // Add any additional collections from Shopify
+      if (shopifyCollections && shopifyCollections.length > 0) {
+        shopifyCollections.forEach((col, idx) => {
+          const exists = enrichedCategories.some(c => c.name.toLowerCase() === col.title.toLowerCase());
+          if (!exists) {
+            enrichedCategories.push({
+              id: `shopify-col-${col.id || idx}`,
+              name: col.title,
+              subtitle: col.description || '',
+              slug: col.title,
+              image: col.image
+            });
           }
         });
-
-        if (foundCategories.size > 0) {
-          const dynamicCatList = [{ id: 'all', name: 'All', slug: 'all' }];
-          Array.from(foundCategories).forEach((catName, idx) => {
-            dynamicCatList.push({
-              id: `cat-${idx}-${catName.toLowerCase().replace(/\s+/g, '-')}`,
-              name: catName,
-              subtitle: '',
-              slug: catName
-            });
-          });
-          setCategories(dynamicCatList);
-        }
       }
+
+      setCategories(enrichedCategories);
     } catch (err) {
-      console.error('Failed to load Shopify products:', err);
+      console.error('Failed to load Shopify data:', err);
       setError(err.message || 'Unable to connect to Shopify store.');
       setProducts([]);
     } finally {

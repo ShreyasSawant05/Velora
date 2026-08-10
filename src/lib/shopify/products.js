@@ -1,5 +1,5 @@
 import { shopifyFetch } from './client.js';
-import { PRODUCTS_QUERY, PRODUCT_BY_HANDLE_QUERY, SEARCH_PRODUCTS_QUERY } from './queries.js';
+import { PRODUCTS_QUERY, PRODUCT_BY_HANDLE_QUERY, SEARCH_PRODUCTS_QUERY, COLLECTIONS_QUERY } from './queries.js';
 
 // Color name to Hex map for UI swatches
 const COLOR_HEX_MAP = {
@@ -179,4 +179,33 @@ export async function searchProducts(searchTerm) {
 
   const edges = data?.products?.edges || [];
   return edges.map(edge => mapShopifyProduct(edge.node)).filter(Boolean);
+}
+
+/**
+ * Fetch collections dynamically from Shopify Storefront API.
+ */
+export async function getCollections(first = 10) {
+  try {
+    const data = await shopifyFetch({
+      query: COLLECTIONS_QUERY,
+      variables: { first }
+    });
+
+    const edges = data?.collections?.edges || [];
+    return edges.map(edge => {
+      const node = edge.node;
+      const imageUrl = node.image?.url || node.products?.edges?.[0]?.node?.featuredImage?.url || null;
+      return {
+        id: node.id,
+        title: node.title,
+        handle: node.handle,
+        slug: node.title,
+        image: imageUrl,
+        description: node.description || ''
+      };
+    }).filter(Boolean);
+  } catch (err) {
+    console.warn('Failed to fetch collections from Shopify:', err);
+    return [];
+  }
 }

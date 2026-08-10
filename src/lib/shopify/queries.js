@@ -220,3 +220,31 @@ export const SEARCH_PRODUCTS_QUERY = `
     }
   }
 `;
+
+export const COLLECTIONS_QUERY = `
+  query getCollections($first: Int = 10) {
+    collections(first: $first) {
+      edges {
+        node {
+          id
+          title
+          handle
+          description
+          image {
+            url
+            altText
+          }
+          products(first: 1) {
+            edges {
+              node {
+                featuredImage {
+                  url
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle, Feather, Footprints, Compass, Layers } from 'lucide-react';
 import { useProducts } from '../../context/ProductContext';
 import { PRODUCTS as staticProducts } from '../../data/products';
 import { ProductCard } from '../../components/Product/ProductCard';
@@ -9,7 +9,7 @@ import './Home.css';
 
 export const Home = () => {
   const { showToast } = useCart();
-  const { products: shopifyProducts, loading: productsLoading } = useProducts();
+  const { products: shopifyProducts, categories: contextCategories } = useProducts();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -31,7 +31,15 @@ export const Home = () => {
     { title: "Loafers", subtitle: "Slip-on refinement", slug: "Loafers" },
     { title: "Sandals", subtitle: "Warm-weather ease", slug: "Sandals" },
     { title: "Boots", subtitle: "Seasonless structure", slug: "Boots" }
-  ];
+  ].map(cat => {
+    const matched = (contextCategories || []).find(
+      c => c.name?.toLowerCase() === cat.title.toLowerCase() || c.slug?.toLowerCase() === cat.slug.toLowerCase()
+    );
+    return {
+      ...cat,
+      image: matched?.image || null
+    };
+  });
 
   return (
     <div className="home-page">
@@ -75,7 +83,11 @@ export const Home = () => {
                 className={`home-category-card reveal-delay-${(index % 4) + 1}`}
               >
                 <div className="home-category-image">
-                  <span className="home-category-placeholder-text">{cat.title}</span>
+                  {cat.image ? (
+                    <img src={cat.image} alt={cat.title} className="home-category-img" />
+                  ) : (
+                    <span className="home-category-placeholder-text">{cat.title}</span>
+                  )}
                 </div>
                 <div className="home-category-info">
                   <h3 className="home-category-name">{cat.title}</h3>
@@ -156,16 +168,38 @@ export const Home = () => {
 
           <div className="home-features-grid">
             {[
-              { title: "Thoughtful Design", desc: "Silhouettes drawn slowly, then edited until nothing extra remains." },
-              { title: "Made for Movement", desc: "Footbeds and flex points shaped around real days on real streets." },
-              { title: "Everyday Versatility", desc: "One pair that reads as easily at a desk as it does at dinner." },
-              { title: "Considered Materials", desc: "Leathers and knits chosen to soften rather than wear out." }
-            ].map((feat, idx) => (
-              <div key={feat.title} className={`home-feature-card reveal-delay-${idx + 1}`}>
-                <h3 className="home-feature-title">{feat.title}</h3>
-                <p className="home-feature-desc">{feat.desc}</p>
-              </div>
-            ))}
+              {
+                icon: Feather,
+                title: "Thoughtful Design",
+                desc: "Silhouettes drawn slowly, then edited until nothing extra remains."
+              },
+              {
+                icon: Footprints,
+                title: "Made for Movement",
+                desc: "Footbeds and flex points shaped around real days on real streets."
+              },
+              {
+                icon: Compass,
+                title: "Everyday Versatility",
+                desc: "One pair that reads as easily at a desk as it does at dinner."
+              },
+              {
+                icon: Layers,
+                title: "Considered Materials",
+                desc: "Leathers and knits chosen to soften rather than wear out."
+              }
+            ].map((feat, idx) => {
+              const IconComponent = feat.icon;
+              return (
+                <div key={feat.title} className={`home-feature-column reveal-delay-${idx + 1}`}>
+                  <div className="home-feature-icon-wrapper">
+                    <IconComponent size={20} strokeWidth={1.35} className="home-feature-icon" />
+                  </div>
+                  <h3 className="home-feature-title">{feat.title}</h3>
+                  <p className="home-feature-desc">{feat.desc}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
