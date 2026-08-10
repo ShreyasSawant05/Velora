@@ -1,0 +1,329 @@
+/* ========================================
+   QUICK VIEW MODAL STYLES
+   ======================================== */
+
+.qv-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.qv-backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease;
+}
+
+.qv-modal {
+  position: relative;
+  background-color: var(--background);
+  border-radius: 16px;
+  overflow: hidden;
+  max-width: 900px;
+  width: 100%;
+  max-height: 85vh;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.qv-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(246, 242, 235, 0.85);
+  backdrop-filter: blur(4px);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--foreground);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease;
+}
+
+.qv-close:hover {
+  transform: rotate(90deg) scale(1.15);
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.qv-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow-y: auto;
+  max-height: 85vh;
+}
+
+@media (max-width: 768px) {
+  .qv-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Image */
+.qv-image {
+  aspect-ratio: 4 / 5;
+  background-color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.qv-image img {
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.qv-image:hover img {
+  transform: scale(1.06);
+}
+
+@media (max-width: 768px) {
+  .qv-image {
+    aspect-ratio: 16 / 10;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+.qv-image-text {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(107, 99, 91, 0.3);
+  font-weight: 500;
+}
+
+.qv-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 5px 12px;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 4px;
+}
+
+/* Details */
+.qv-details {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+}
+
+.qv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.qv-category {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--muted-foreground);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.qv-name {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--foreground);
+  margin: 0 0 4px;
+}
+
+.qv-subtitle {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+
+.qv-price {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--foreground);
+  white-space: nowrap;
+}
+
+.qv-description {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--muted-foreground);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Option Groups */
+.qv-option-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qv-option-label {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--foreground);
+}
+
+.qv-swatches {
+  display: flex;
+  gap: 8px;
+}
+
+.qv-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.qv-swatch:hover {
+  transform: scale(1.18);
+  border-color: var(--foreground);
+}
+
+.qv-swatch-active {
+  border-color: var(--foreground);
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--foreground);
+}
+
+.qv-sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.qv-size {
+  min-width: 42px;
+  height: 38px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.qv-size:hover {
+  border-color: var(--foreground);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.qv-size-active {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(35, 31, 28, 0.15);
+}
+
+/* Actions */
+.qv-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.qv-add-btn {
+  flex: 1;
+  padding: 14px 24px;
+  border-radius: 9999px;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+
+.qv-add-btn svg {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.qv-add-btn:hover {
+  background-color: var(--charcoal);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 8px 20px rgba(35, 31, 28, 0.25);
+}
+
+.qv-add-btn:hover svg {
+  transform: scale(1.15) translateY(-1px);
+}
+
+.qv-add-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.qv-wishlist-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.qv-wishlist-btn:hover {
+  border-color: var(--foreground);
+  transform: scale(1.12) rotate(6deg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.qv-wishlist-btn-active {
+  border-color: #A93933;
+  background-color: rgba(169, 57, 51, 0.06);
+}
