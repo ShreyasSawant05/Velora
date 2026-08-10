@@ -8,7 +8,7 @@ import { useCart } from '../../context/CartContext';
 import './Home.css';
 
 // Custom SVG Feature Icons with sub-elements for micro-animations
-const FeatherFeatureIcon = ({ size = 20, strokeWidth = 1.35 }) => (
+const FeatherFeatureIcon = ({ size = 32, strokeWidth = 1.6 }) => (
   <svg
     width={size}
     height={size}
@@ -26,7 +26,7 @@ const FeatherFeatureIcon = ({ size = 20, strokeWidth = 1.35 }) => (
   </svg>
 );
 
-const FootprintsFeatureIcon = ({ size = 20, strokeWidth = 1.35 }) => (
+const FootprintsFeatureIcon = ({ size = 32, strokeWidth = 1.6 }) => (
   <svg
     width={size}
     height={size}
@@ -49,7 +49,7 @@ const FootprintsFeatureIcon = ({ size = 20, strokeWidth = 1.35 }) => (
   </svg>
 );
 
-const CompassFeatureIcon = ({ size = 20, strokeWidth = 1.35 }) => (
+const CompassFeatureIcon = ({ size = 32, strokeWidth = 1.6 }) => (
   <svg
     width={size}
     height={size}
@@ -69,7 +69,7 @@ const CompassFeatureIcon = ({ size = 20, strokeWidth = 1.35 }) => (
   </svg>
 );
 
-const LayersFeatureIcon = ({ size = 20, strokeWidth = 1.35 }) => (
+const LayersFeatureIcon = ({ size = 32, strokeWidth = 1.6 }) => (
   <svg
     width={size}
     height={size}
@@ -272,7 +272,7 @@ export const Home = () => {
               return (
                 <div key={feat.title} className={`home-feature-column reveal-delay-${idx + 1}`}>
                   <div className="home-feature-icon-wrapper">
-                    <IconComponent size={20} strokeWidth={1.35} />
+                    <IconComponent size={32} strokeWidth={1.6} />
                   </div>
                   <h3 className="home-feature-title">{feat.title}</h3>
                   <p className="home-feature-desc">{feat.desc}</p>
