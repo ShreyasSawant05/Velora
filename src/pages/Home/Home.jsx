@@ -7,6 +7,86 @@ import { ProductCard } from '../../components/Product/ProductCard';
 import { useCart } from '../../context/CartContext';
 import './Home.css';
 
+// Custom SVG Feature Icons with sub-elements for micro-animations
+const FeatherFeatureIcon = ({ size = 20, strokeWidth = 1.35 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="home-feature-icon feature-icon-feather"
+  >
+    <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L3 13v5h5l9.76-9.76z" />
+    <line x1="16" y1="8" x2="2" y2="22" />
+    <line x1="17.5" y1="15" x2="9" y2="15" />
+  </svg>
+);
+
+const FootprintsFeatureIcon = ({ size = 20, strokeWidth = 1.35 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="home-feature-icon feature-icon-footprints"
+  >
+    <g className="footprint-step-left">
+      <path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.5v2" />
+      <path d="M4 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+    </g>
+    <g className="footprint-step-right">
+      <path d="M14 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C8.63 6 8 7.8 8 9.5c0 3.11 2 5.66 2 8.5v2" />
+      <path d="M20 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+    </g>
+  </svg>
+);
+
+const CompassFeatureIcon = ({ size = 20, strokeWidth = 1.35 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="home-feature-icon feature-icon-compass"
+  >
+    <circle cx="12" cy="12" r="10" className="compass-outer-ring" />
+    <polygon
+      points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"
+      className="compass-inner-needle"
+    />
+  </svg>
+);
+
+const LayersFeatureIcon = ({ size = 20, strokeWidth = 1.35 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="home-feature-icon feature-icon-layers"
+  >
+    <polygon points="12 2 2 7 12 12 22 7 12 2" className="layer-item layer-top" />
+    <polyline points="2 12 12 17 22 12" className="layer-item layer-middle" />
+    <polyline points="2 17 12 22 22 17" className="layer-item layer-bottom" />
+  </svg>
+);
+
 export const Home = () => {
   const { showToast } = useCart();
   const { products: shopifyProducts, categories: contextCategories } = useProducts();
@@ -47,7 +127,6 @@ export const Home = () => {
       {/* ====== HERO SECTION ====== */}
       <section className="home-hero">
         <div className="home-hero-content">
-          <span className="home-hero-label">AUTUMN EDIT 2026</span>
           <h1 className="home-hero-heading">
             Made to move<br />with you
           </h1>
@@ -169,22 +248,22 @@ export const Home = () => {
           <div className="home-features-grid">
             {[
               {
-                icon: Feather,
+                icon: FeatherFeatureIcon,
                 title: "Thoughtful Design",
                 desc: "Silhouettes drawn slowly, then edited until nothing extra remains."
               },
               {
-                icon: Footprints,
+                icon: FootprintsFeatureIcon,
                 title: "Made for Movement",
                 desc: "Footbeds and flex points shaped around real days on real streets."
               },
               {
-                icon: Compass,
+                icon: CompassFeatureIcon,
                 title: "Everyday Versatility",
                 desc: "One pair that reads as easily at a desk as it does at dinner."
               },
               {
-                icon: Layers,
+                icon: LayersFeatureIcon,
                 title: "Considered Materials",
                 desc: "Leathers and knits chosen to soften rather than wear out."
               }
@@ -193,7 +272,7 @@ export const Home = () => {
               return (
                 <div key={feat.title} className={`home-feature-column reveal-delay-${idx + 1}`}>
                   <div className="home-feature-icon-wrapper">
-                    <IconComponent size={20} strokeWidth={1.35} className="home-feature-icon" />
+                    <IconComponent size={20} strokeWidth={1.35} />
                   </div>
                   <h3 className="home-feature-title">{feat.title}</h3>
                   <p className="home-feature-desc">{feat.desc}</p>
