@@ -9,11 +9,24 @@ export const ProductCard = ({ product, compact = false }) => {
   const { addToCart, setQuickViewProduct, wishlist, toggleWishlist } = useCart();
 
   const isWishlisted = wishlist.includes(product.id);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const primaryImage = product.image || (product.images && product.images[0]) || null;
+  const secondaryImage = (product.images && product.images.length > 1 && product.images[1] !== primaryImage) 
+    ? product.images[1] 
+    : null;
+
+  const hasComparePrice = Boolean(product.compareAtPrice && product.compareAtPriceValue && product.compareAtPriceValue > (product.priceValue || 0));
+  const discountPercent = hasComparePrice 
+    ? Math.round(((product.compareAtPriceValue - product.priceValue) / product.compareAtPriceValue) * 100) 
+    : null;
 
   const handleQuickAdd = (e) => {
     e.stopPropagation();
     if (!product.inStock) return;
-    addToCart(product);
+    addToCart({
+      ...product,
+      selectedSize: selectedSize || (product.sizes && product.sizes[0]) || null
+    });
   };
 
   const handleCardClick = () => {
@@ -31,12 +44,22 @@ export const ProductCard = ({ product, compact = false }) => {
     >
       {/* Image Container */}
       <div className="product-card-image">
-        {product.image ? (
-          <img
-            src={product.image}
-            alt={product.name}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
+        {primaryImage ? (
+          <>
+            <img
+              src={primaryImage}
+              alt={product.name}
+              className="product-card-img product-card-img-primary"
+            />
+            {secondaryImage && (
+              <img
+                src={secondaryImage}
+                alt={`${product.name} alternate angle`}
+                className="product-card-img product-card-img-secondary"
+                loading="lazy"
+              />
+            )}
+          </>
         ) : (
           /* Empty placeholder for image */
           <div className="product-card-placeholder">
@@ -47,7 +70,7 @@ export const ProductCard = ({ product, compact = false }) => {
         )}
 
         {/* Badge */}
-        {product.badge && (
+        {product.badge ? (
           <span
             className="product-card-badge"
             style={{
@@ -59,9 +82,13 @@ export const ProductCard = ({ product, compact = false }) => {
                 : 'var(--foreground)'
             }}
           >
-            {product.badge === 'Sold out' ? 'SOLD OUT' : 'NEW'}
+            {product.badge === 'Sold out' ? 'SOLD OUT' : product.badge.toUpperCase()}
           </span>
-        )}
+        ) : (discountPercent && discountPercent > 0) ? (
+          <span className="product-card-badge product-card-badge-sale">
+            {discountPercent}% OFF
+          </span>
+        ) : null}
 
         {/* Wishlist Heart */}
         <button
@@ -79,15 +106,39 @@ export const ProductCard = ({ product, compact = false }) => {
           />
         </button>
 
-        {/* Quick Add Button – slides up on hover */}
+        {/* Actions Overlay */}
         <div className="product-card-actions">
+          {/* Quick Size Selection Chips */}
+          {product.sizes && product.sizes.length > 0 && product.inStock && (
+            <div className="product-card-sizes">
+              <span className="product-card-sizes-title">SELECT SIZE:</span>
+              <div className="product-card-size-chips">
+                {product.sizes.slice(0, 6).map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    className={`product-card-size-chip ${selectedSize === size ? 'active' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedSize(size);
+                      addToCart({ ...product, selectedSize: size });
+                    }}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Quick Add Button */}
           <button
             className="product-card-quick-add"
             onClick={handleQuickAdd}
             disabled={!product.inStock}
           >
             <ShoppingBag size={14} />
-            {product.inStock ? 'QUICK ADD' : 'SOLD OUT'}
+            {product.inStock ? (selectedSize ? `ADD SIZE ${selectedSize}` : 'QUICK ADD') : 'SOLD OUT'}
           </button>
         </div>
       </div>
@@ -97,15 +148,15 @@ export const ProductCard = ({ product, compact = false }) => {
         {/* Row 1: Name + Price */}
         <div className="product-card-row">
           <h3 className="product-card-name">{product.name}</h3>
-          <span className="product-card-price">{product.price}</span>
+          <div className="product-card-price-group">
+            <span className="product-card-price">{product.price}</span>
+            {hasComparePrice && (
+              <span className="product-card-compare-price">{product.compareAtPrice}</span>
+            )}
+          </div>
         </div>
 
-        {/* Row 2: Subtitle */}
-        {!compact && product.subtitle && (
-          <p className="product-card-subtitle">{product.subtitle}</p>
-        )}
-
-        {/* Row 3: Color Swatches + Category */}
+        {/* Row 2: Color Swatches + Category */}
         <div className="product-card-row product-card-meta">
           <div className="product-card-swatches">
             {product.colors && product.colors.map((c) => (

@@ -196,6 +196,16 @@ export const SEARCH_PRODUCTS_QUERY = `
             url
             altText
           }
+          images(first: 10) {
+            edges {
+              node {
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
           priceRange {
             minVariantPrice {
               amount

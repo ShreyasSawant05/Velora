@@ -184,7 +184,7 @@ export async function searchProducts(searchTerm) {
 /**
  * Fetch collections dynamically from Shopify Storefront API.
  */
-export async function getCollections(first = 10) {
+export async function getCollections(first = 25) {
   try {
     const data = await shopifyFetch({
       query: COLLECTIONS_QUERY,
@@ -199,7 +199,7 @@ export async function getCollections(first = 10) {
         id: node.id,
         title: node.title,
         handle: node.handle,
-        slug: node.title,
+        slug: node.handle || node.title,
         image: imageUrl,
         description: node.description || ''
       };

@@ -49,11 +49,11 @@ export const Footer = () => {
           <div className="footer-link-col">
             <h4 className="footer-col-title">SHOP</h4>
             <ul className="footer-links">
-              <li><Link to="/collection">New Arrivals</Link></li>
+              <li><Link to="/collection">All Collections</Link></li>
+              <li><Link to="/collection?category=Men">Men's Collection</Link></li>
+              <li><Link to="/collection?category=Women">Women's Collection</Link></li>
               <li><Link to="/collection?category=Sneakers">Sneakers</Link></li>
               <li><Link to="/collection?category=Loafers">Loafers</Link></li>
-              <li><Link to="/collection?category=Sandals">Sandals</Link></li>
-              <li><Link to="/collection?category=Boots">Boots</Link></li>
             </ul>
           </div>
 
@@ -104,7 +104,7 @@ export const Footer = () => {
         {/* Bottom Bar */}
         <div className="footer-bottom">
           <p className="footer-copyright">
-            © 2026 VÉLORA. All rights reserved. Fictional demo brand.
+            © 2026 Velora. Designed & Developed by Brand Forge
           </p>
           <div className="footer-legal">
             <a href="#" onClick={e => e.preventDefault()}>Privacy Policy</a>

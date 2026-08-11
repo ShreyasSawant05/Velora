@@ -3,66 +3,47 @@ import { getProducts, getCollections } from '../lib/shopify/products.js';
 
 const ProductContext = createContext();
 
-const DEFAULT_CATEGORIES = [
-  { id: 'all', name: 'All', slug: 'all' },
-  { id: 'sneakers', name: 'Sneakers', subtitle: 'Everyday low-tops', slug: 'Sneakers' },
-  { id: 'loafers', name: 'Loafers', subtitle: 'Slip-on refinement', slug: 'Loafers' },
-  { id: 'sandals', name: 'Sandals', subtitle: 'Warm-weather ease', slug: 'Sandals' },
-  { id: 'boots', name: 'Boots', subtitle: 'Seasonless structure', slug: 'Boots' },
-  { id: 'flats', name: 'Flats', subtitle: 'Flexible elegance', slug: 'Flats' },
-  { id: 'formal', name: 'Formal', subtitle: 'Handcrafted detail', slug: 'Formal' }
+const FALLBACK_CATEGORIES = [
+  { id: 'all', name: 'All', title: 'All', slug: 'all' }
 ];
 
 export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+  const [categories, setCategories] = useState(FALLBACK_CATEGORIES);
+  const [shopifyCollections, setShopifyCollections] = useState([]);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const [shopifyProducts, shopifyCollections] = await Promise.all([
+      const [fetchedProducts, fetchedCollections] = await Promise.all([
         getProducts(50),
-        getCollections(10)
+        getCollections(25)
       ]);
 
-      setProducts(shopifyProducts);
+      setProducts(fetchedProducts);
+      setShopifyCollections(fetchedCollections);
 
-      // Map Shopify collection images
-      const collectionMap = new Map();
-      (shopifyCollections || []).forEach(col => {
-        if (col.title) collectionMap.set(col.title.toLowerCase(), col);
-        if (col.handle) collectionMap.set(col.handle.toLowerCase(), col);
-      });
-
-      // Enrich default categories with images
-      const enrichedCategories = DEFAULT_CATEGORIES.map(cat => {
-        const matched = collectionMap.get(cat.name.toLowerCase()) || collectionMap.get(cat.slug.toLowerCase());
-        return {
-          ...cat,
-          image: matched?.image || null
-        };
-      });
-
-      // Add any additional collections from Shopify
-      if (shopifyCollections && shopifyCollections.length > 0) {
-        shopifyCollections.forEach((col, idx) => {
-          const exists = enrichedCategories.some(c => c.name.toLowerCase() === col.title.toLowerCase());
-          if (!exists) {
-            enrichedCategories.push({
-              id: `shopify-col-${col.id || idx}`,
-              name: col.title,
-              subtitle: col.description || '',
-              slug: col.title,
-              image: col.image
-            });
-          }
-        });
+      if (fetchedCollections && fetchedCollections.length > 0) {
+        const dynamicCategories = [
+          { id: 'all', name: 'All', title: 'All', slug: 'all' },
+          ...fetchedCollections.map((col, idx) => ({
+            id: col.id || `col-${idx}`,
+            name: col.title,
+            title: col.title,
+            handle: col.handle,
+            slug: col.handle || col.title,
+            image: col.image,
+            subtitle: col.description ? col.description.split('.')[0] : '',
+            description: col.description || ''
+          }))
+        ];
+        setCategories(dynamicCategories);
+      } else {
+        setCategories(FALLBACK_CATEGORIES);
       }
-
-      setCategories(enrichedCategories);
     } catch (err) {
       console.error('Failed to load Shopify data:', err);
       setError(err.message || 'Unable to connect to Shopify store.');
@@ -81,6 +62,7 @@ export const ProductProvider = ({ children }) => {
       value={{
         products,
         categories,
+        shopifyCollections,
         loading,
         error,
         refetch: fetchProducts

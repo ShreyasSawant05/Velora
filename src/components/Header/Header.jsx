@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, ShoppingBag, User, Menu, X } from 'lucide-react';
+import { Search, ShoppingBag, User, Menu, X, ChevronDown, ArrowRight } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useProducts } from '../../context/ProductContext';
 import './Header.css';
 
 export const Header = () => {
@@ -13,11 +14,28 @@ export const Header = () => {
     isMobileMenuOpen,
     setIsMobileMenuOpen
   } = useCart();
+  const { categories, products } = useProducts();
+
+  const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
+  const [hoveredSpotlight, setHoveredSpotlight] = useState(null);
+  const hoverTimeoutRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setIsMegaMenuOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    hoverTimeoutRef.current = setTimeout(() => {
+      setIsMegaMenuOpen(false);
+      setHoveredSpotlight(null);
+    }, 180);
+  };
 
   const navLinks = [
     { name: 'HOME', path: '/' },
     { name: 'ABOUT US', path: '/about' },
-    { name: 'COLLECTION', path: '/collection' },
+    { name: 'COLLECTION', path: '/collection', hasDropdown: true },
     { name: 'CONTACT US', path: '/contact' }
   ];
 
@@ -27,6 +45,31 @@ export const Header = () => {
   };
 
   const announcementText = "COMPLIMENTARY SHIPPING ON ORDERS OVER ₹5,000";
+
+  // Category helpers for Men's and Women's
+  const isMenCategory = (str) => {
+    if (!str) return false;
+    const s = str.toLowerCase();
+    const isWomen = s.includes('women') || s.includes('female') || s.includes('ladies');
+    if (isWomen) return false;
+    return s.includes('men') || s.includes('male') || s.includes('man');
+  };
+
+  const isWomenCategory = (str) => {
+    if (!str) return false;
+    const s = str.toLowerCase();
+    return s.includes('women') || s.includes('female') || s.includes('ladies');
+  };
+
+  const validCategories = (categories || []).filter(c => c.id !== 'all' && c.name?.toLowerCase() !== 'all');
+  const menCategories = validCategories.filter(c => isMenCategory(c.name || c.title));
+  const womenCategories = validCategories.filter(c => isWomenCategory(c.name || c.title));
+
+  // Default spotlight image from product or category fallback
+  const defaultSpotlightImage = products?.[0]?.image || validCategories?.[0]?.image || null;
+  const spotlightTitle = hoveredSpotlight?.name || "VÉLORA ESSENTIALS";
+  const spotlightImage = hoveredSpotlight?.image || defaultSpotlightImage;
+  const spotlightLink = hoveredSpotlight?.link || "/collection";
 
   return (
     <>
@@ -56,246 +99,264 @@ export const Header = () => {
         </div>
       </div>
 
-      {/* Main Header */}
-      <header style={{
-        backgroundColor: 'var(--background)',
-        borderBottom: '1px solid var(--border)',
-        position: 'sticky',
-        top: 0,
-        zIndex: 40,
-        transition: 'box-shadow 0.3s ease'
-      }}>
-        <div style={{
-          maxWidth: '1340px',
-          margin: '0 auto',
-          padding: '0 24px',
-          height: '64px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          {/* Mobile hamburger */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            style={{
-              padding: '8px',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--foreground)',
-              display: 'none'
-            }}
-            className="mobile-menu-btn"
-            aria-label="Toggle menu"
-          >
-            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
-
-          {/* Desktop Nav */}
-          <nav className="desktop-nav" style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '32px'
-          }}>
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`header-nav-link ${isActive(link.path) ? 'active' : ''}`}
-              >
-                {link.name}
-                <span className="nav-link-underline" />
-              </Link>
-            ))}
-          </nav>
-
-          {/* Logo */}
-          <Link to="/" className="header-logo">
-            VÉLORA
-          </Link>
-
-          {/* Action Icons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      {/* Main Header Container */}
+      <div
+        className="header-wrapper-relative"
+        onMouseLeave={handleMouseLeave}
+      >
+        <header className="site-header">
+          <div className="header-inner">
+            {/* Mobile hamburger */}
             <button
-              onClick={() => setIsSearchOpen(true)}
-              className="header-icon-btn"
-              aria-label="Search"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="mobile-menu-btn"
+              aria-label="Toggle menu"
             >
-              <Search size={20} />
+              {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
-            <Link
-              to="/account"
-              className="header-icon-btn"
-              aria-label="Account"
-            >
-              <User size={20} />
+
+            {/* Desktop Nav */}
+            <nav className="desktop-nav">
+              {navLinks.map((link) => {
+                if (link.hasDropdown) {
+                  return (
+                    <div
+                      key={link.path}
+                      className="nav-item-dropdown-trigger"
+                      onMouseEnter={handleMouseEnter}
+                    >
+                      <Link
+                        to={link.path}
+                        className={`header-nav-link ${isActive(link.path) || isMegaMenuOpen ? 'active' : ''}`}
+                      >
+                        <span>{link.name}</span>
+                        <ChevronDown size={12} className={`nav-chevron ${isMegaMenuOpen ? 'chevron-rotated' : ''}`} />
+                        <span className="nav-link-underline" />
+                      </Link>
+                    </div>
+                  );
+                }
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`header-nav-link ${isActive(link.path) ? 'active' : ''}`}
+                    onMouseEnter={() => setIsMegaMenuOpen(false)}
+                  >
+                    {link.name}
+                    <span className="nav-link-underline" />
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Logo */}
+            <Link to="/" className="header-logo">
+              VÉLORA
             </Link>
-            <button
-              onClick={() => setIsCartOpen(true)}
-              className="header-icon-btn header-cart-btn"
-              aria-label="Shopping Bag"
-            >
-              <ShoppingBag size={20} />
-              {cartCount > 0 && (
-                <span className="cart-count-badge">
-                  {cartCount}
-                </span>
-              )}
-            </button>
+
+            {/* Action Icons */}
+            <div className="header-actions">
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="header-icon-btn"
+                aria-label="Search"
+              >
+                <Search size={20} />
+              </button>
+              <Link
+                to="/account"
+                className="header-icon-btn"
+                aria-label="Account"
+              >
+                <User size={20} />
+              </Link>
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className="header-icon-btn header-cart-btn"
+                aria-label="Shopping Bag"
+              >
+                <ShoppingBag size={20} />
+                {cartCount > 0 && (
+                  <span className="cart-count-badge">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
-        </div>
+
+          {/* ====== FULL-WIDTH GLASSMORPHIC MEGA MENU DROPDOWN ====== */}
+          {isMegaMenuOpen && (
+            <div
+              className="mega-menu-dropdown"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <div className="mega-menu-inner">
+                {/* Column 1: Shop By Segment */}
+                <div className="mega-menu-col">
+                  <span className="mega-menu-label">EXPLORE</span>
+                  <ul className="mega-menu-links">
+                    <li>
+                      <Link
+                        to="/collection"
+                        onClick={() => setIsMegaMenuOpen(false)}
+                        onMouseEnter={() => setHoveredSpotlight({ name: 'All Footwear Collection', image: defaultSpotlightImage, link: '/collection' })}
+                      >
+                        All Footwear
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/collection?category=Men"
+                        onClick={() => setIsMegaMenuOpen(false)}
+                        onMouseEnter={() => setHoveredSpotlight({ name: "Men's Collection", image: menCategories[0]?.image || defaultSpotlightImage, link: '/collection?category=Men' })}
+                      >
+                        Men's Collection
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/collection?category=Women"
+                        onClick={() => setIsMegaMenuOpen(false)}
+                        onMouseEnter={() => setHoveredSpotlight({ name: "Women's Collection", image: womenCategories[0]?.image || defaultSpotlightImage, link: '/collection?category=Women' })}
+                      >
+                        Women's Collection
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/collection?badge=New"
+                        onClick={() => setIsMegaMenuOpen(false)}
+                        onMouseEnter={() => setHoveredSpotlight({ name: "New Arrivals", image: products?.[0]?.image || defaultSpotlightImage, link: '/collection?badge=New' })}
+                      >
+                        New Arrivals
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Column 2: Men's Categories */}
+                <div className="mega-menu-col">
+                  <span className="mega-menu-label">MEN'S FOOTWEAR</span>
+                  <ul className="mega-menu-links">
+                    {menCategories.length > 0 ? (
+                      menCategories.map(cat => (
+                        <li key={cat.id || cat.name}>
+                          <Link
+                            to={`/collection?category=${encodeURIComponent(cat.name)}`}
+                            onClick={() => setIsMegaMenuOpen(false)}
+                            onMouseEnter={() => setHoveredSpotlight({
+                              name: cat.name,
+                              image: cat.image || defaultSpotlightImage,
+                              link: `/collection?category=${encodeURIComponent(cat.name)}`
+                            })}
+                          >
+                            {cat.name}
+                          </Link>
+                        </li>
+                      ))
+                    ) : (
+                      <>
+                        <li><Link to="/collection?category=Men's%20Sneakers" onClick={() => setIsMegaMenuOpen(false)}>Men's Sneakers</Link></li>
+                        <li><Link to="/collection?category=Men's%20Boots" onClick={() => setIsMegaMenuOpen(false)}>Men's Boots</Link></li>
+                        <li><Link to="/collection?category=Men's%20Loafers" onClick={() => setIsMegaMenuOpen(false)}>Men's Loafers</Link></li>
+                        <li><Link to="/collection?category=Men's%20Clogs%20%26%20Slides" onClick={() => setIsMegaMenuOpen(false)}>Men's Clogs & Slides</Link></li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+
+                {/* Column 3: Women's Categories */}
+                <div className="mega-menu-col">
+                  <span className="mega-menu-label">WOMEN'S FOOTWEAR</span>
+                  <ul className="mega-menu-links">
+                    {womenCategories.length > 0 ? (
+                      womenCategories.map(cat => (
+                        <li key={cat.id || cat.name}>
+                          <Link
+                            to={`/collection?category=${encodeURIComponent(cat.name)}`}
+                            onClick={() => setIsMegaMenuOpen(false)}
+                            onMouseEnter={() => setHoveredSpotlight({
+                              name: cat.name,
+                              image: cat.image || defaultSpotlightImage,
+                              link: `/collection?category=${encodeURIComponent(cat.name)}`
+                            })}
+                          >
+                            {cat.name}
+                          </Link>
+                        </li>
+                      ))
+                    ) : (
+                      <>
+                        <li><Link to="/collection?category=Women's%20Sneakers" onClick={() => setIsMegaMenuOpen(false)}>Women's Sneakers</Link></li>
+                        <li><Link to="/collection?category=Women's%20Ballerinas" onClick={() => setIsMegaMenuOpen(false)}>Women's Ballerinas</Link></li>
+                        <li><Link to="/collection?category=Women's%20Running%20%26%20Gym%20Shoes" onClick={() => setIsMegaMenuOpen(false)}>Women's Running</Link></li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+
+                {/* Column 4: Dynamic Visual Spotlight Card */}
+                <div className="mega-menu-spotlight-wrapper">
+                  <Link
+                    to={spotlightLink}
+                    className="mega-menu-spotlight-card"
+                    onClick={() => setIsMegaMenuOpen(false)}
+                  >
+                    <div className="mega-menu-spotlight-img-box">
+                      {spotlightImage ? (
+                        <img src={spotlightImage} alt={spotlightTitle} />
+                      ) : (
+                        <div className="mega-menu-spotlight-placeholder" />
+                      )}
+                      <div className="mega-menu-spotlight-gradient" />
+                    </div>
+                    <div className="mega-menu-spotlight-info">
+                      <span className="mega-menu-spotlight-badge">FEATURED SPOTLIGHT</span>
+                      <h4 className="mega-menu-spotlight-title">{spotlightTitle}</h4>
+                      <span className="mega-menu-spotlight-action">
+                        EXPLORE NOW <ArrowRight size={13} />
+                      </span>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+        </header>
 
         {/* Mobile Nav Drawer */}
         {isMobileMenuOpen && (
-          <div style={{
-            backgroundColor: 'var(--background)',
-            borderTop: '1px solid var(--border)',
-            padding: '24px'
-          }}
-          className="mobile-nav-drawer"
-          >
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="mobile-nav-drawer">
+            <nav className="mobile-nav-links">
               {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`mobile-nav-link ${isActive(link.path) ? 'active' : ''}`}
-                >
-                  {link.name}
-                </Link>
+                <div key={link.path}>
+                  <Link
+                    to={link.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`mobile-nav-link ${isActive(link.path) ? 'active' : ''}`}
+                  >
+                    {link.name}
+                  </Link>
+                  {link.hasDropdown && (
+                    <div className="mobile-sub-nav">
+                      <Link to="/collection?category=Men" onClick={() => setIsMobileMenuOpen(false)}>— Men's Footwear</Link>
+                      <Link to="/collection?category=Women" onClick={() => setIsMobileMenuOpen(false)}>— Women's Footwear</Link>
+                      {validCategories.map(cat => (
+                        <Link key={cat.id} to={`/collection?category=${encodeURIComponent(cat.name)}`} onClick={() => setIsMobileMenuOpen(false)}>
+                          — {cat.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
             </nav>
           </div>
         )}
-      </header>
-
-      <style>{`
-        .header-nav-link {
-          font-size: 12px;
-          font-weight: 500;
-          letter-spacing: 0.08em;
-          color: var(--muted-foreground);
-          text-decoration: none;
-          position: relative;
-          padding: 4px 0;
-          transition: color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-          font-family: var(--font-sans);
-        }
-
-        .header-nav-link:hover,
-        .header-nav-link.active {
-          color: var(--foreground);
-        }
-
-        .nav-link-underline {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 100%;
-          height: 1.5px;
-          background-color: var(--foreground);
-          border-radius: 2px;
-          transform: scaleX(0);
-          transform-origin: right;
-          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .header-nav-link.active .nav-link-underline {
-          transform: scaleX(1);
-        }
-
-        .header-nav-link:hover .nav-link-underline {
-          transform: scaleX(1);
-          transform-origin: left;
-        }
-
-        .header-logo {
-          font-family: var(--font-serif);
-          font-size: 24px;
-          letter-spacing: 0.2em;
-          font-weight: 500;
-          color: var(--foreground);
-          text-decoration: none;
-          position: absolute;
-          left: 50%;
-          transform: translateX(-50%);
-          transition: letter-spacing 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .header-logo:hover {
-          letter-spacing: 0.24em;
-          transform: translateX(-50%) scale(1.02);
-        }
-
-        .header-icon-btn {
-          padding: 8px;
-          background: transparent;
-          border: none;
-          border-radius: 50%;
-          cursor: pointer;
-          color: var(--foreground);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease;
-        }
-
-        .header-icon-btn:hover {
-          transform: scale(1.12);
-          background-color: rgba(35, 31, 28, 0.05);
-        }
-
-        .cart-count-badge {
-          position: absolute;
-          top: 2px;
-          right: 2px;
-          width: 16px;
-          height: 16px;
-          font-size: 10px;
-          font-weight: 700;
-          border-radius: 50%;
-          background-color: var(--primary);
-          color: var(--primary-foreground);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .header-cart-btn:hover .cart-count-badge {
-          transform: scale(1.2);
-        }
-
-        .mobile-nav-link {
-          font-size: 14px;
-          font-weight: 500;
-          letter-spacing: 0.08em;
-          color: var(--muted-foreground);
-          text-decoration: none;
-          padding: 6px 0;
-          font-family: var(--font-sans);
-          transition: color 0.2s ease, transform 0.2s ease;
-          display: inline-block;
-        }
-
-        .mobile-nav-link:hover,
-        .mobile-nav-link.active {
-          color: var(--foreground);
-          transform: translateX(4px);
-        }
-
-        @media (max-width: 1023px) {
-          .desktop-nav { display: none !important; }
-          .mobile-menu-btn { display: flex !important; }
-        }
-        @media (min-width: 1024px) {
-          .desktop-nav { display: flex !important; }
-          .mobile-menu-btn { display: none !important; }
-          .mobile-nav-drawer { display: none !important; }
-        }
-      `}</style>
+      </div>
     </>
   );
 };

@@ -89,7 +89,7 @@ const LayersFeatureIcon = ({ size = 32, strokeWidth = 1.6 }) => (
 
 export const Home = () => {
   const { showToast } = useCart();
-  const { products: shopifyProducts, categories: contextCategories } = useProducts();
+  const { products: shopifyProducts, categories: contextCategories, shopifyCollections } = useProducts();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -106,20 +106,55 @@ export const Home = () => {
     setEmail('');
   };
 
-  const categories = [
-    { title: "Sneakers", subtitle: "Everyday low-tops", slug: "Sneakers" },
-    { title: "Loafers", subtitle: "Slip-on refinement", slug: "Loafers" },
-    { title: "Sandals", subtitle: "Warm-weather ease", slug: "Sandals" },
-    { title: "Boots", subtitle: "Seasonless structure", slug: "Boots" }
-  ].map(cat => {
-    const matched = (contextCategories || []).find(
-      c => c.name?.toLowerCase() === cat.title.toLowerCase() || c.slug?.toLowerCase() === cat.slug.toLowerCase()
-    );
-    return {
-      ...cat,
-      image: matched?.image || null
-    };
+  // Dynamic categories from Shopify (excluding 'All')
+  const allCategories = (contextCategories || [])
+    .filter(cat => cat.id !== 'all' && cat.name?.toLowerCase() !== 'all')
+    .map(cat => {
+      // Find fallback image from products if collection image is missing
+      let catImage = cat.image;
+      if (!catImage) {
+        const matchingProduct = allProducts.find(p =>
+          p.category?.toLowerCase() === cat.name?.toLowerCase() ||
+          (p.collections || []).some(c => c.title?.toLowerCase() === cat.name?.toLowerCase())
+        );
+        if (matchingProduct) {
+          catImage = matchingProduct.image;
+        }
+      }
+      return {
+        ...cat,
+        image: catImage
+      };
+    });
+
+  // Limit display to top 4 featured categories on Home page (since there is a View All button)
+  const displayCategories = allCategories.slice(0, 4);
+
+  // Extract Men & Women collections data from Shopify
+  const menCols = (shopifyCollections || []).filter(c => {
+    const title = (c.title || '').toLowerCase();
+    return (title.includes('men') || title.includes('male')) && !title.includes('women') && !title.includes('female');
   });
+  const womenCols = (shopifyCollections || []).filter(c => {
+    const title = (c.title || '').toLowerCase();
+    return title.includes('women') || title.includes('female') || title.includes('ladies');
+  });
+
+  const menImage = menCols.find(c => c.image)?.image || 
+    allProducts.find(p => (p.collections || []).some(c => (c.title || '').toLowerCase().includes('men') && !(c.title || '').toLowerCase().includes('women')))?.image || 
+    null;
+
+  const womenImage = womenCols.find(c => c.image)?.image || 
+    allProducts.find(p => (p.collections || []).some(c => (c.title || '').toLowerCase().includes('women')))?.image || 
+    null;
+
+  const menSub = menCols.length > 0
+    ? menCols.map(c => c.title.replace(/^(Men's|Mens|Men)\s*/i, '')).join(' · ')
+    : 'Sneakers, Loafers, Clogs & Slides';
+
+  const womenSub = womenCols.length > 0
+    ? womenCols.map(c => c.title.replace(/^(Women's|Womens|Women)\s*/i, '')).join(' · ')
+    : 'Sneakers, Ballerinas, Running & Gym Shoes';
 
   return (
     <div className="home-page">
@@ -144,7 +179,7 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* ====== CATEGORIES SECTION ====== */}
+      {/* ====== CATEGORIES SECTION (FIND YOUR EVERYDAY) ====== */}
       <section className="home-section">
         <div className="home-section-inner">
           <div className="home-section-header">
@@ -155,25 +190,71 @@ export const Home = () => {
           </div>
 
           <div className="home-categories-grid">
-            {categories.map((cat, index) => (
+            {displayCategories.map((cat, index) => (
               <Link
-                key={cat.title}
-                to={`/collection?category=${cat.slug}`}
+                key={cat.id || cat.name}
+                to={`/collection?category=${encodeURIComponent(cat.name)}`}
                 className={`home-category-card reveal-delay-${(index % 4) + 1}`}
               >
                 <div className="home-category-image">
                   {cat.image ? (
-                    <img src={cat.image} alt={cat.title} className="home-category-img" />
+                    <img src={cat.image} alt={cat.name} className="home-category-img" />
                   ) : (
-                    <span className="home-category-placeholder-text">{cat.title}</span>
+                    <span className="home-category-placeholder-text">{cat.name}</span>
                   )}
                 </div>
                 <div className="home-category-info">
-                  <h3 className="home-category-name">{cat.title}</h3>
-                  <p className="home-category-sub">{cat.subtitle}</p>
+                  <h3 className="home-category-name">{cat.name}</h3>
                 </div>
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ====== MEN & WOMEN GENDER SECTION ====== */}
+      <section className="home-section home-gender-section">
+        <div className="home-section-inner">
+          <div className="home-gender-grid">
+            {/* Men's Card */}
+            <Link to="/collection?category=Men" className="home-gender-card home-gender-men">
+              <div className="home-gender-bg">
+                {menImage ? (
+                  <img src={menImage} alt="Men's Footwear Collection" />
+                ) : (
+                  <div className="home-gender-placeholder" />
+                )}
+              </div>
+              <div className="home-gender-overlay" />
+              <div className="home-gender-content">
+                <span className="home-gender-label">VÉLORA MAN</span>
+                <h3 className="home-gender-title">Men's Collection</h3>
+                <p className="home-gender-desc">{menSub}</p>
+                <span className="home-gender-btn">
+                  SHOP MEN <ArrowRight size={14} />
+                </span>
+              </div>
+            </Link>
+
+            {/* Women's Card */}
+            <Link to="/collection?category=Women" className="home-gender-card home-gender-women">
+              <div className="home-gender-bg">
+                {womenImage ? (
+                  <img src={womenImage} alt="Women's Footwear Collection" />
+                ) : (
+                  <div className="home-gender-placeholder" />
+                )}
+              </div>
+              <div className="home-gender-overlay" />
+              <div className="home-gender-content">
+                <span className="home-gender-label">VÉLORA WOMAN</span>
+                <h3 className="home-gender-title">Women's Collection</h3>
+                <p className="home-gender-desc">{womenSub}</p>
+                <span className="home-gender-btn">
+                  SHOP WOMEN <ArrowRight size={14} />
+                </span>
+              </div>
+            </Link>
           </div>
         </div>
       </section>
