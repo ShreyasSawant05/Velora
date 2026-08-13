@@ -14,13 +14,13 @@ export const ProductProvider = ({ children }) => {
   const [categories, setCategories] = useState(FALLBACK_CATEGORIES);
   const [shopifyCollections, setShopifyCollections] = useState([]);
 
-  const fetchProducts = useCallback(async () => {
+  const fetchProducts = useCallback(async (forceCacheBust = false) => {
     setLoading(true);
     setError(null);
     try {
       const [fetchedProducts, fetchedCollections] = await Promise.all([
-        getProducts(50),
-        getCollections(25)
+        getProducts(50, { cacheBust: forceCacheBust }),
+        getCollections(50, { cacheBust: forceCacheBust })
       ]);
 
       setProducts(fetchedProducts);
@@ -65,7 +65,8 @@ export const ProductProvider = ({ children }) => {
         shopifyCollections,
         loading,
         error,
-        refetch: fetchProducts
+        refetch: fetchProducts,
+        syncWithShopify: () => fetchProducts(true)
       }}
     >
       {children}

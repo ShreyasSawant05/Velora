@@ -135,6 +135,7 @@ export function mapShopifyProduct(node) {
     sizes: sizes,
     inStock: Boolean(node.availableForSale),
     description: node.description || '',
+    createdAt: node.createdAt || null,
     collections: collections,
     options: rawOptions,
     variants: variants
@@ -144,10 +145,15 @@ export function mapShopifyProduct(node) {
 /**
  * Fetch products from Shopify Storefront API and map to Vélora components format.
  */
-export async function getProducts(first = 50) {
+export async function getProducts(first = 50, options = {}) {
   const data = await shopifyFetch({
     query: PRODUCTS_QUERY,
-    variables: { first }
+    variables: { 
+      first,
+      sortKey: options.sortKey || 'CREATED_AT',
+      reverse: options.reverse !== undefined ? options.reverse : true
+    },
+    cacheBust: options.cacheBust
   });
 
   const edges = data?.products?.edges || [];
@@ -157,10 +163,11 @@ export async function getProducts(first = 50) {
 /**
  * Fetch a single product by handle from Shopify Storefront API.
  */
-export async function getProductByHandle(handle) {
+export async function getProductByHandle(handle, options = {}) {
   const data = await shopifyFetch({
     query: PRODUCT_BY_HANDLE_QUERY,
-    variables: { handle }
+    variables: { handle },
+    cacheBust: options.cacheBust
   });
 
   if (!data?.product) return null;
@@ -184,11 +191,12 @@ export async function searchProducts(searchTerm) {
 /**
  * Fetch collections dynamically from Shopify Storefront API.
  */
-export async function getCollections(first = 25) {
+export async function getCollections(first = 50, options = {}) {
   try {
     const data = await shopifyFetch({
       query: COLLECTIONS_QUERY,
-      variables: { first }
+      variables: { first },
+      cacheBust: options.cacheBust
     });
 
     const edges = data?.collections?.edges || [];

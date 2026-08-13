@@ -9,7 +9,7 @@ import './SearchDrawer.css';
 
 export const SearchDrawer = () => {
   const { isSearchOpen, setIsSearchOpen } = useCart();
-  const { products: shopifyProducts } = useProducts();
+  const { products: shopifyProducts, categories } = useProducts();
   const [query, setQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
@@ -65,7 +65,11 @@ export const SearchDrawer = () => {
 
   if (!isSearchOpen) return null;
 
-  const quickTags = ['Sneakers', 'Loafers', 'Sandals', 'Boots', 'New Arrivals'];
+  const validCatNames = (categories || [])
+    .filter(c => c.id !== 'all' && c.name?.toLowerCase() !== 'all')
+    .map(c => c.name);
+
+  const quickTags = validCatNames.length > 0 ? validCatNames.slice(0, 5) : ['Sneakers', 'Loafers', 'Boots'];
 
   return (
     <div className="search-overlay">

@@ -1,10 +1,11 @@
 export const PRODUCTS_QUERY = `
-  query getProducts($first: Int = 50) {
-    products(first: $first) {
+  query getProducts($first: Int = 50, $sortKey: ProductSortKeys = CREATED_AT, $reverse: Boolean = true) {
+    products(first: $first, sortKey: $sortKey, reverse: $reverse) {
       edges {
         node {
           id
           title
+          createdAt
           handle
           description
           availableForSale

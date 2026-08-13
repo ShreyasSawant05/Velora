@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useProducts } from '../../context/ProductContext';
 import './Footer.css';
 
 export const Footer = () => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const { categories } = useProducts();
+
+  const validCategories = (categories || [])
+    .filter(c => c.id !== 'all' && c.name?.toLowerCase() !== 'all')
+    .slice(0, 4);
 
   const handleJoin = (e) => {
     e.preventDefault();
@@ -52,8 +58,13 @@ export const Footer = () => {
               <li><Link to="/collection">All Collections</Link></li>
               <li><Link to="/collection?category=Men">Men's Collection</Link></li>
               <li><Link to="/collection?category=Women">Women's Collection</Link></li>
-              <li><Link to="/collection?category=Sneakers">Sneakers</Link></li>
-              <li><Link to="/collection?category=Loafers">Loafers</Link></li>
+              {validCategories.map(cat => (
+                <li key={cat.id || cat.name}>
+                  <Link to={`/collection?category=${encodeURIComponent(cat.name)}`}>
+                    {cat.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Feather, Footprints, Compass, Layers } from 'lucide-react';
+import { ArrowRight, CheckCircle, Feather, Footprints, Compass, Layers, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useProducts } from '../../context/ProductContext';
 import { PRODUCTS as staticProducts } from '../../data/products';
 import { ProductCard } from '../../components/Product/ProductCard';
@@ -92,11 +92,44 @@ export const Home = () => {
   const { products: shopifyProducts, categories: contextCategories, shopifyCollections } = useProducts();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const carouselRef = useRef(null);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(1);
 
   const allProducts = (shopifyProducts && shopifyProducts.length > 0) ? shopifyProducts : staticProducts;
-  const newInProducts = allProducts.filter(p => p.badge === 'New').length > 0
-    ? allProducts.filter(p => p.badge === 'New').slice(0, 4)
-    : allProducts.slice(0, 4);
+
+  // Recently added products logic: strictly ordered by newest creation date first (descending)
+  const newInProducts = [...allProducts]
+    .sort((a, b) => {
+      if (a.createdAt && b.createdAt) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+      return 0;
+    })
+    .slice(0, 10);
+
+  const handleScrollCarousel = (direction) => {
+    if (!carouselRef.current) return;
+    const container = carouselRef.current;
+    const cardWidth = container.querySelector('.home-carousel-slide')?.offsetWidth || 300;
+    const scrollAmount = (cardWidth + 20) * (direction === 'left' ? -1 : 1);
+    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  };
+
+  const updateSlideIndex = () => {
+    if (!carouselRef.current) return;
+    const container = carouselRef.current;
+    const cardWidth = container.querySelector('.home-carousel-slide')?.offsetWidth || 300;
+    const current = Math.round(container.scrollLeft / (cardWidth + 20)) + 1;
+    setCurrentSlideIndex(Math.min(Math.max(1, current), newInProducts.length));
+  };
+
+  useEffect(() => {
+    const container = carouselRef.current;
+    if (container) {
+      container.addEventListener('scroll', updateSlideIndex);
+      return () => container.removeEventListener('scroll', updateSlideIndex);
+    }
+  }, [newInProducts.length]);
 
   const handleSubscribe = (e) => {
     e.preventDefault();
@@ -150,11 +183,11 @@ export const Home = () => {
 
   const menSub = menCols.length > 0
     ? menCols.map(c => c.title.replace(/^(Men's|Mens|Men)\s*/i, '')).join(' · ')
-    : 'Sneakers, Loafers, Clogs & Slides';
+    : 'Explore all men\'s footwear styles';
 
   const womenSub = womenCols.length > 0
     ? womenCols.map(c => c.title.replace(/^(Women's|Womens|Women)\s*/i, '')).join(' · ')
-    : 'Sneakers, Ballerinas, Running & Gym Shoes';
+    : 'Explore all women\'s footwear styles';
 
   return (
     <div className="home-page">
@@ -262,21 +295,55 @@ export const Home = () => {
       {/* ====== THE LATEST EDIT ====== */}
       <section className="home-section home-section-alt">
         <div className="home-section-inner">
-          <div className="home-section-header">
+          <div className="home-section-header home-latest-header">
             <div>
-              <h2 className="home-section-title">The latest edit</h2>
+              <div className="home-latest-title-row">
+                <h2 className="home-section-title">The latest edit</h2>
+                <span className="home-latest-live-pill">
+                  <span className="home-latest-live-dot" />
+                  JUST DROPPED
+                </span>
+              </div>
               <p className="home-section-subtitle">
                 New silhouettes crafted for every day. Discover our newest arrivals.
               </p>
             </div>
+
+            {/* Slider Navigation & Slide Counter */}
+            <div className="home-latest-controls">
+              <span className="home-latest-counter">
+                <span className="home-latest-current">{String(currentSlideIndex).padStart(2, '0')}</span> / {String(newInProducts.length).padStart(2, '0')}
+              </span>
+              <div className="home-latest-arrow-btns">
+                <button
+                  type="button"
+                  onClick={() => handleScrollCarousel('left')}
+                  className="home-latest-arrow-btn"
+                  aria-label="Previous arrivals"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleScrollCarousel('right')}
+                  className="home-latest-arrow-btn"
+                  aria-label="Next arrivals"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div className="home-products-grid">
-            {newInProducts.map((product, index) => (
-              <div key={product.id} className={`reveal-delay-${(index % 4) + 1}`}>
-                <ProductCard product={product} />
-              </div>
-            ))}
+          {/* Carousel Track Container */}
+          <div className="home-carousel-container">
+            <div className="home-carousel-track" ref={carouselRef}>
+              {newInProducts.map((product, index) => (
+                <div key={product.id} className="home-carousel-slide">
+                  <ProductCard product={product} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

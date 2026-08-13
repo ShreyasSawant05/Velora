@@ -10,11 +10,16 @@ const SHOPIFY_ENDPOINT = 'https://brandforge-12.myshopify.com/api/2026-07/graphq
  * @param {Object} [options.variables] - GraphQL query variables
  * @returns {Promise<Object>} GraphQL response data object
  */
-export async function shopifyFetch({ query, variables = {} }) {
+export async function shopifyFetch({ query, variables = {}, cacheBust = false }) {
   const headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   };
+
+  if (cacheBust) {
+    headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+    headers['Pragma'] = 'no-cache';
+  }
 
   // Public Storefront Access Token from .env
   const storefrontToken = 
@@ -25,11 +30,16 @@ export async function shopifyFetch({ query, variables = {} }) {
     headers['X-Shopify-Storefront-Access-Token'] = storefrontToken;
   }
 
+  const endpoint = cacheBust 
+    ? `${SHOPIFY_ENDPOINT}?_t=${Date.now()}` 
+    : SHOPIFY_ENDPOINT;
+
   try {
-    const response = await fetch(SHOPIFY_ENDPOINT, {
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers,
       body: JSON.stringify({ query, variables }),
+      cache: cacheBust ? 'no-store' : 'default'
     });
 
     if (!response.ok) {

@@ -258,12 +258,11 @@ export const Header = () => {
                         </li>
                       ))
                     ) : (
-                      <>
-                        <li><Link to="/collection?category=Men's%20Sneakers" onClick={() => setIsMegaMenuOpen(false)}>Men's Sneakers</Link></li>
-                        <li><Link to="/collection?category=Men's%20Boots" onClick={() => setIsMegaMenuOpen(false)}>Men's Boots</Link></li>
-                        <li><Link to="/collection?category=Men's%20Loafers" onClick={() => setIsMegaMenuOpen(false)}>Men's Loafers</Link></li>
-                        <li><Link to="/collection?category=Men's%20Clogs%20%26%20Slides" onClick={() => setIsMegaMenuOpen(false)}>Men's Clogs & Slides</Link></li>
-                      </>
+                      <li>
+                        <Link to="/collection?category=Men" onClick={() => setIsMegaMenuOpen(false)}>
+                          All Men's Shoes
+                        </Link>
+                      </li>
                     )}
                   </ul>
                 </div>
@@ -289,11 +288,11 @@ export const Header = () => {
                         </li>
                       ))
                     ) : (
-                      <>
-                        <li><Link to="/collection?category=Women's%20Sneakers" onClick={() => setIsMegaMenuOpen(false)}>Women's Sneakers</Link></li>
-                        <li><Link to="/collection?category=Women's%20Ballerinas" onClick={() => setIsMegaMenuOpen(false)}>Women's Ballerinas</Link></li>
-                        <li><Link to="/collection?category=Women's%20Running%20%26%20Gym%20Shoes" onClick={() => setIsMegaMenuOpen(false)}>Women's Running</Link></li>
-                      </>
+                      <li>
+                        <Link to="/collection?category=Women" onClick={() => setIsMegaMenuOpen(false)}>
+                          All Women's Shoes
+                        </Link>
+                      </li>
                     )}
                   </ul>
                 </div>

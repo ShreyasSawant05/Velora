@@ -72,7 +72,7 @@ export const ProductCard = ({ product, compact = false }) => {
         {/* Badge */}
         {product.badge ? (
           <span
-            className="product-card-badge"
+            className={`product-card-badge ${product.badge.toLowerCase() === 'new' ? 'product-card-badge-new' : ''}`}
             style={{
               backgroundColor: product.badge === 'Sold out'
                 ? 'var(--destructive)'
@@ -82,6 +82,9 @@ export const ProductCard = ({ product, compact = false }) => {
                 : 'var(--foreground)'
             }}
           >
+            {product.badge.toLowerCase() === 'new' && (
+              <span className="product-badge-pulse-dot" />
+            )}
             {product.badge === 'Sold out' ? 'SOLD OUT' : product.badge.toUpperCase()}
           </span>
         ) : (discountPercent && discountPercent > 0) ? (
