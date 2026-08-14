@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/copy-to-theme-assets.js",
     "lint": "oxlint",
     "preview": "vite preview",
     "get-storefront-token": "node scripts/get-storefront-token.js"

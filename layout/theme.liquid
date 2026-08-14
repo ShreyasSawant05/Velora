@@ -19,13 +19,17 @@
     {% endif %}
 
     {{ content_for_header }}
+
+    {{ 'app.css' | asset_url | stylesheet_tag }}
   </head>
 
   <body class="gradient">
     <div id="root"></div>
 
-    <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
+    <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1" style="display: none;">
       {{ content_for_layout }}
     </main>
+
+    <script type="module" src="{{ 'app.js' | asset_url }}" defer></script>
   </body>
 </html>
