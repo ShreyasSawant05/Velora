@@ -1,0 +1,10 @@
+{
+  "sections": {
+    "apps": {
+      "type": "apps"
+    }
+  },
+  "order": [
+    "apps"
+  ]
+}
