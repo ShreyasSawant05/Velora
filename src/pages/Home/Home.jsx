@@ -194,6 +194,11 @@ export const Home = () => {
 
       {/* ====== HERO SECTION ====== */}
       <section className="home-hero">
+        <img
+          src="/hero_section.png"
+          alt="Vélora Footwear Hero"
+          className="home-hero-bg-img"
+        />
         <div className="home-hero-content">
           <h1 className="home-hero-heading">
             Made to move<br />with you
@@ -349,12 +354,16 @@ export const Home = () => {
       </section>
 
       {/* ====== COMFORT, WITH INTENTION ====== */}
-      <section className="home-section">
-        <div className="home-section-inner">
+      <section className="home-section home-story-section">
+        <div className="home-section-inner home-story-inner">
           <div className="home-story-split">
             {/* Image side */}
             <div className="home-story-image">
-              <div className="home-story-image-placeholder" />
+              <img
+                src="/comfort_with_intention_section.png"
+                alt="Comfort, with intention"
+                className="home-story-img"
+              />
             </div>
             {/* Text side */}
             <div className="home-story-text">
@@ -379,19 +388,23 @@ export const Home = () => {
       {/* ====== WHEREVER YOUR DAY LEADS ====== */}
       <section className="home-section">
         <div className="home-section-inner">
-          <div className="home-section-header">
-            <h2 className="home-features-heading">
+          {/* Editorial image card containing heading and CTA */}
+          <Link to="/collection" className="home-editorial-image-card">
+            <img
+              src="/wherever_your_day_leads_section.png"
+              alt="Wherever your day leads"
+              className="home-editorial-img"
+            />
+            <div className="home-editorial-overlay" />
+            <h2 className="home-editorial-title">
               Wherever your day<br />leads.
             </h2>
-            <Link to="/collection" className="home-features-link">
-              Explore the collection <ArrowRight size={14} />
-            </Link>
-          </div>
-
-          {/* Editorial image container */}
-          <div className="home-editorial-image">
-            <span className="home-editorial-placeholder-text">Editorial Image</span>
-          </div>
+            <div className="home-editorial-badge">
+              <span className="home-editorial-btn">
+                EXPLORE THE COLLECTION <ArrowRight size={14} />
+              </span>
+            </div>
+          </Link>
 
           <div className="home-features-grid">
             {[

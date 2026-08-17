@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { SlidersHorizontal, ChevronDown, RefreshCw, AlertCircle, Grid2X2, Grid3X3, LayoutGrid } from 'lucide-react';
+import { SlidersHorizontal, ChevronDown, AlertCircle, Grid2X2, Grid3X3, LayoutGrid } from 'lucide-react';
 import { useProducts } from '../../context/ProductContext';
 import { ProductCard } from '../../components/Product/ProductCard';
 import './Collection.css';
@@ -9,25 +9,13 @@ export const Collection = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCategoryParam = searchParams.get('category') || 'All';
 
-  const { products, categories, loading, error, refetch, syncWithShopify } = useProducts();
-  const [syncing, setSyncing] = useState(false);
+  const { products, categories, loading, error, refetch } = useProducts();
 
   const [activeCategory, setActiveCategory] = useState(activeCategoryParam);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sortBy, setSortBy] = useState('featured');
   const [gridCols, setGridCols] = useState(4);
-
-  const handleSync = async () => {
-    setSyncing(true);
-    try {
-      await syncWithShopify();
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setSyncing(false);
-    }
-  };
 
   useEffect(() => {
     setActiveCategory(searchParams.get('category') || 'All');
@@ -162,6 +150,11 @@ export const Collection = () => {
 
       {/* ---- HERO BANNER ---- */}
       <section className="collection-hero">
+        <img
+          src="/Collection_-_Banner.png"
+          alt="Vélora Collection Banner"
+          className="collection-hero-bg-img"
+        />
         <div className="collection-hero-inner">
           <span className="collection-hero-label">VÉLORA COLLECTION</span>
           <h1 className="collection-hero-heading">Footwear for every rhythm.</h1>
@@ -219,17 +212,6 @@ export const Collection = () => {
             {loading ? 'LOADING...' : `${sorted.length} PRODUCTS`}
           </span>
           <div className="collection-filter-actions">
-            <button
-              onClick={handleSync}
-              disabled={syncing || loading}
-              className={`collection-filter-btn ${syncing ? 'collection-filter-btn-active' : ''}`}
-              title="Force sync latest collections and products from Shopify Storefront"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-            >
-              <RefreshCw size={13} className={syncing ? 'animate-spin' : ''} />
-              {syncing ? 'SYNCING...' : 'SYNC WITH SHOPIFY'}
-            </button>
-
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
               className={`collection-filter-btn ${isFilterOpen || inStockOnly ? 'collection-filter-btn-active' : ''}`}

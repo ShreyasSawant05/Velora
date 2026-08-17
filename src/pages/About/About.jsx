@@ -8,6 +8,11 @@ export const About = () => {
 
       {/* ---- HERO ---- */}
       <section className="about-hero">
+        <img
+          src="/About_us_-_Banner.png"
+          alt="About Vélora Banner"
+          className="about-hero-bg-img"
+        />
         <div className="about-hero-inner">
           <span className="about-hero-label">OUR STORY</span>
           <h1 className="about-hero-heading">
@@ -25,7 +30,11 @@ export const About = () => {
           <div className="about-beginnings-split">
             {/* Image Side */}
             <div className="about-beginnings-image">
-              <div className="about-beginnings-image-placeholder" />
+              <img
+                src="/About_us__Beginnings_section.png"
+                alt="Vélora Beginnings"
+                className="about-beginnings-img"
+              />
             </div>
             {/* Text Side */}
             <div className="about-beginnings-text">
@@ -82,6 +91,12 @@ export const About = () => {
 
       {/* ---- QUOTE BAND ---- */}
       <section className="about-quote">
+        <img
+          src="/About_Us_Qoute_section.png"
+          alt="Vélora Studio Quote Background"
+          className="about-quote-bg-img"
+        />
+        <div className="about-quote-overlay" />
         <div className="about-quote-inner">
           <blockquote className="about-quote-text">
             "The best design is the kind you feel before you notice."

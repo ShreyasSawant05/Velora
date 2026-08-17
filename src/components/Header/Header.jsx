@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, ShoppingBag, User, Menu, X, ChevronDown, ArrowRight } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
@@ -18,7 +18,21 @@ export const Header = () => {
 
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const [hoveredSpotlight, setHoveredSpotlight] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
   const hoverTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleMouseEnter = () => {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
@@ -101,10 +115,10 @@ export const Header = () => {
 
       {/* Main Header Container */}
       <div
-        className="header-wrapper-relative"
+        className={`header-wrapper-relative ${isScrolled ? 'is-scrolled' : ''}`}
         onMouseLeave={handleMouseLeave}
       >
-        <header className="site-header">
+        <header className={`site-header ${isScrolled ? 'is-scrolled' : ''}`}>
           <div className="header-inner">
             {/* Mobile hamburger */}
             <button

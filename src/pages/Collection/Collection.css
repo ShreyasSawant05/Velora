@@ -9,13 +9,45 @@
 
 /* ---- HERO ---- */
 .collection-hero {
+  position: relative;
   background-color: var(--charcoal);
-  padding: 56px 24px 48px;
+  min-height: 50vh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.collection-hero-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  filter: brightness(0.9);
+}
+
+.collection-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.45) 50%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+  z-index: 1;
 }
 
 .collection-hero-inner {
   max-width: 1340px;
+  width: 100%;
   margin: 0 auto;
+  padding: 48px 40px 56px;
+  position: relative;
+  z-index: 2;
 }
 
 .collection-hero-label {
@@ -23,28 +55,29 @@
   font-family: var(--font-sans);
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(246, 242, 235, 0.45);
+  color: rgba(246, 242, 235, 0.75);
   margin-bottom: 12px;
 }
 
 .collection-hero-heading {
   font-family: var(--font-serif);
-  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 500;
   color: #F6F2EB;
   margin: 0 0 12px;
   letter-spacing: -0.02em;
-  line-height: 1.1;
+  line-height: 1.08;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
 }
 
 .collection-hero-sub {
   font-family: var(--font-sans);
-  font-size: 14px;
-  color: rgba(246, 242, 235, 0.55);
+  font-size: 15px;
+  color: rgba(246, 242, 235, 0.8);
   margin: 0;
-  max-width: 440px;
+  max-width: 480px;
   line-height: 1.6;
 }
 
@@ -123,32 +156,39 @@
 }
 
 .collection-sub-tab {
-  padding: 6px 14px;
+  padding: 8px 18px;
   font-family: var(--font-sans);
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   border: 1px solid var(--border);
   border-radius: 9999px;
   background: var(--background);
   color: var(--muted-foreground);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
 }
 
 .collection-sub-tab:hover {
   border-color: var(--foreground);
   color: var(--foreground);
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .collection-sub-tab-active {
   background-color: var(--primary);
   color: var(--primary-foreground);
   border-color: var(--primary);
-  box-shadow: 0 3px 10px rgba(35, 31, 28, 0.12);
+  box-shadow: 0 4px 14px rgba(35, 31, 28, 0.22);
+}
+
+.collection-sub-tab-active:hover {
+  color: var(--primary-foreground);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(35, 31, 28, 0.3);
 }
 
 /* ---- FILTER BAR ---- */
@@ -177,17 +217,18 @@
 }
 
 .collection-filter-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
+  gap: 8px;
+  padding: 8px 20px;
   font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   border: 1px solid var(--border);
-  border-radius: 4px;
-  background: transparent;
+  border-radius: 9999px;
+  background: var(--background);
   color: var(--foreground);
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -195,53 +236,75 @@
 
 .collection-filter-btn:hover {
   border-color: var(--foreground);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
 .collection-filter-btn-active {
   background-color: var(--primary);
   color: var(--primary-foreground);
   border-color: var(--primary);
+  box-shadow: 0 4px 14px rgba(35, 31, 28, 0.22);
 }
 
 .collection-sort-wrapper {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  padding: 8px 36px 8px 18px;
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  background: var(--background);
   position: relative;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.collection-sort-wrapper:hover {
+  border-color: var(--foreground);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
 .collection-sort-label {
   font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: var(--muted-foreground);
   white-space: nowrap;
+  pointer-events: none;
 }
 
 .collection-sort-select {
   appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   background: transparent;
   border: none;
   font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: var(--foreground);
   cursor: pointer;
-  padding-right: 20px;
+  padding-right: 0;
   outline: none;
+  text-transform: uppercase;
 }
 
 .collection-sort-chevron {
   position: absolute;
-  right: 0;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--muted-foreground);
+  color: var(--foreground);
   pointer-events: none;
+  transition: transform 0.2s ease;
+}
+
+.collection-sort-wrapper:hover .collection-sort-chevron {
+  transform: translateY(-50%) translateY(1px);
 }
 
 /* ---- FILTER PANEL ---- */
@@ -310,36 +373,43 @@
 .collection-grid-switcher {
   display: flex;
   align-items: center;
-  gap: 2px;
-  background: var(--card);
-  padding: 3px;
-  border-radius: 6px;
+  gap: 4px;
+  background: var(--background);
+  padding: 4px 6px;
+  border-radius: 9999px;
   border: 1px solid var(--border);
-  margin-left: 8px;
+  margin-left: 4px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.collection-grid-switcher:hover {
+  border-color: var(--foreground);
 }
 
 .collection-grid-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 4px;
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
   border: none;
   background: transparent;
   color: var(--muted-foreground);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .collection-grid-btn:hover {
   color: var(--foreground);
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
 }
 
 .collection-grid-btn.active {
   background: var(--primary);
   color: var(--primary-foreground);
+  box-shadow: 0 2px 8px rgba(35, 31, 28, 0.25);
 }
 
 /* ---- PRODUCT GRID ---- */

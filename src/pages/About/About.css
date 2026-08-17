@@ -9,10 +9,23 @@
 
 /* ---- HERO ---- */
 .about-hero {
-  background-color: var(--charcoal);
-  padding: 72px 24px 56px;
   position: relative;
+  background-color: var(--charcoal);
+  min-height: 65vh;
+  display: flex;
+  align-items: flex-end;
   overflow: hidden;
+}
+
+.about-hero-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  filter: brightness(0.9);
 }
 
 .about-hero::before {
@@ -20,17 +33,21 @@
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.3) 0%,
-    transparent 60%
+    to top,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.45) 50%,
+    rgba(0, 0, 0, 0.15) 100%
   );
+  z-index: 1;
 }
 
 .about-hero-inner {
   max-width: 1340px;
+  width: 100%;
   margin: 0 auto;
+  padding: 48px 40px 56px;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .about-hero-label {
@@ -38,29 +55,30 @@
   font-family: var(--font-sans);
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(246, 242, 235, 0.45);
-  margin-bottom: 16px;
+  color: rgba(246, 242, 235, 0.75);
+  margin-bottom: 12px;
 }
 
 .about-hero-heading {
   font-family: var(--font-serif);
-  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 500;
   color: #F6F2EB;
   margin: 0 0 16px;
   letter-spacing: -0.02em;
-  line-height: 1.1;
+  line-height: 1.08;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
 }
 
 .about-hero-sub {
   font-family: var(--font-sans);
-  font-size: 14px;
-  color: rgba(246, 242, 235, 0.55);
+  font-size: 15px;
+  color: rgba(246, 242, 235, 0.8);
   margin: 0;
   max-width: 480px;
-  line-height: 1.7;
+  line-height: 1.6;
 }
 
 /* ---- SECTIONS ---- */
@@ -98,23 +116,22 @@
 .about-beginnings-image {
   position: relative;
   overflow: hidden;
+  border-radius: 12px;
 }
 
-.about-beginnings-image-placeholder {
+.about-beginnings-img {
   width: 100%;
   height: 100%;
   min-height: 400px;
-  background-color: var(--muted);
-  border-radius: 8px;
-  position: relative;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  border-radius: 12px;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-.about-beginnings-image-placeholder::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at center, rgba(255,255,255,0.15) 0%, transparent 70%);
-  border-radius: 8px;
+.about-beginnings-split:hover .about-beginnings-img {
+  transform: scale(1.03);
 }
 
 .about-beginnings-text {
@@ -217,14 +234,40 @@
 
 /* ---- QUOTE BAND ---- */
 .about-quote {
+  position: relative;
   background-color: var(--charcoal);
-  padding: 80px 24px;
+  padding: 100px 24px;
+  overflow: hidden;
+}
+
+.about-quote-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  filter: brightness(0.65);
+}
+
+.about-quote-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(0, 0, 0, 0.75) 100%
+  );
+  z-index: 1;
 }
 
 .about-quote-inner {
   max-width: 800px;
   margin: 0 auto;
   text-align: center;
+  position: relative;
+  z-index: 2;
 }
 
 .about-quote-text {

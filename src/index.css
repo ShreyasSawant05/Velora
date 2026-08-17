@@ -1,6 +1,7 @@
 /* VÉLORA Color System & Styling */
 :root {
   --background: #F6F2EB;
+  --background-rgb: 246, 242, 235;
   --foreground: #231F1C;
   --primary: #231F1C;
   --primary-foreground: #F6F2EB;
@@ -41,7 +42,7 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 #root {
