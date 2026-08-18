@@ -20,31 +20,29 @@ const FeatherFeatureIcon = ({ size = 32, strokeWidth = 1.6 }) => (
     strokeLinejoin="round"
     className="home-feature-icon feature-icon-feather"
   >
-    <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L3 13v5h5l9.76-9.76z" />
-    <line x1="16" y1="8" x2="2" y2="22" />
-    <line x1="17.5" y1="15" x2="9" y2="15" />
+    {/* Quill Stem & Center Spine */}
+    <path d="M 2.5 21.5 L 5.5 17.5 C 9.5 12.5 13.5 8 16.8 4.2" />
+    <path d="M 4.0 20.0 L 5.0 19.0" />
+    {/* Feather Vane Outer Silhouette with Notches */}
+    <path d="M 5.5 17.5 C 5.8 15.5 6.2 14.5 6.2 14.5 L 7.5 15.0 L 6.8 12.5 C 7.2 11.0 7.8 10.0 7.8 10.0 L 9.2 10.6 L 8.8 8.0 C 9.4 6.6 10.4 5.5 10.4 5.5 L 11.8 6.2 L 12.2 3.8 C 13.5 2.8 15.0 2.2 17.0 2.2 C 18.5 4.0 18.4 5.5 18.4 5.5 L 17.0 5.8 L 18.2 8.0 C 18.0 9.5 17.5 10.8 17.5 10.8 L 15.6 11.2 L 16.5 13.2 C 15.5 14.8 14.2 16.0 14.2 16.0 L 12.5 16.2 L 11.2 17.8 C 8.5 18.8 6.5 18.2 5.5 17.5 Z" />
   </svg>
 );
 
-const FootprintsFeatureIcon = ({ size = 32, strokeWidth = 1.6 }) => (
+const FootprintsFeatureIcon = ({ size = 32 }) => (
   <svg
     width={size}
     height={size}
     viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={strokeWidth}
-    strokeLinecap="round"
-    strokeLinejoin="round"
+    fill="currentColor"
     className="home-feature-icon feature-icon-footprints"
   >
     <g className="footprint-step-left">
-      <path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.5v2" />
-      <path d="M4 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+      <path d="M 6.2 2 C 4.2 2 2.8 3.8 2.8 6.8 C 2.8 9.8 3.3 12.2 3.3 13.2 C 3.3 13.7 3.6 14 4.1 14 L 8.4 14 C 8.9 14 9.2 13.7 9.2 13.2 C 9.2 11.5 9.7 8.2 9.7 5.8 C 9.7 3.5 8.2 2 6.2 2 Z" />
+      <path d="M 3.6 15.5 C 3.2 15.5 2.9 15.8 2.9 16.2 L 2.9 17.2 C 2.9 19.8 4.4 22 6.2 22 C 8.0 22 9.5 19.8 9.5 17.2 L 9.5 16.2 C 9.5 15.8 9.2 15.5 8.8 15.5 Z" />
     </g>
     <g className="footprint-step-right">
-      <path d="M14 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C8.63 6 8 7.8 8 9.5c0 3.11 2 5.66 2 8.5v2" />
-      <path d="M20 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+      <path d="M 17.8 2 C 19.8 2 21.2 3.8 21.2 6.8 C 21.2 9.8 20.7 12.2 20.7 13.2 C 20.7 13.7 20.4 14 19.9 14 L 15.6 14 C 15.1 14 14.8 13.7 14.8 13.2 C 14.8 11.5 14.3 8.2 14.3 5.8 C 14.3 3.5 15.8 2 17.8 2 Z" />
+      <path d="M 20.4 15.5 C 20.8 15.5 21.1 15.8 21.1 16.2 L 21.1 17.2 C 21.1 19.8 19.6 22 17.8 22 C 16.0 22 14.5 19.8 14.5 17.2 L 14.5 16.2 C 14.5 15.8 14.8 15.5 15.2 15.5 Z" />
     </g>
   </svg>
 );
